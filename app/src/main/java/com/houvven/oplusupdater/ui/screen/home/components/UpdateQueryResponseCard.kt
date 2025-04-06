@@ -113,11 +113,16 @@ private fun UpdateQueryResponseCardContent(
                 title = stringResource(R.string.version_type),
                 summary = "$versionTypeH5 ($status)"
             )
-
             SuperArrowWrapper(
                 title = stringResource(R.string.version_name),
                 summary = versionName
             )
+            (realOtaVersion ?: otaVersion)?.let {
+                SuperArrowWrapper(
+                    title = stringResource(R.string.ota_version),
+                    summary = it
+                )
+            }
             SuperArrowWrapper(
                 title = stringResource(R.string.android_version),
                 summary = realAndroidVersion ?: androidVersion
