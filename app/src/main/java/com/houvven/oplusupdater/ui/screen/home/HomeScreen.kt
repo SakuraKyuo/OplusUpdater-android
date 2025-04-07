@@ -100,6 +100,10 @@ fun HomeScreen() {
 
     LaunchedEffect(otaVersion, otaRegion) {
         otaVersion.split("_").firstOrNull()?.let {
+            if (it.isBlank()) {
+                model = ""
+                return@let
+            }
             model = when (otaRegion) {
                 OtaRegion.EU -> it + "EEA"
                 OtaRegion.IN -> it + "IN"
