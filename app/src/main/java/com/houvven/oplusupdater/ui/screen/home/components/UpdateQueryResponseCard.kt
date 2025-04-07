@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.toClipEntry
@@ -78,6 +79,10 @@ private fun SuperArrowWrapper(
     rightActionColor: RightActionColors = SuperArrowDefaults.rightActionColors(),
     onClick: (() -> Unit)? = null,
 ) {
+    val defaultActionColors = RightActionColors(
+        color = Color.Transparent,
+        disabledColor = Color.Transparent,
+    )
 
     if (!summary.isNullOrBlank()) {
         SuperArrow(
@@ -88,7 +93,7 @@ private fun SuperArrowWrapper(
             summaryColor = summaryColor,
             leftAction = leftAction,
             rightText = rightText,
-            rightActionColor = rightActionColor,
+            rightActionColor = if (onClick == null) defaultActionColors else rightActionColor,
             onClick = onClick,
         )
     }
