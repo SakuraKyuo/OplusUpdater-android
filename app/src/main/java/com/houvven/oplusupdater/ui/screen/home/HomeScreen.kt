@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -97,6 +98,16 @@ fun HomeScreen() {
     var responseResult by remember { mutableStateOf<ResponseResult?>(null) }
     val msgFlow = MutableSharedFlow<String>()
 
+    LaunchedEffect(otaVersion, otaRegion) {
+        otaVersion.split("_").firstOrNull()?.let {
+            model = when (otaRegion) {
+                OtaRegion.EU -> it + "EEA"
+                OtaRegion.IN -> it + "IN"
+                else -> it
+            }
+        }
+    }
+
     LaunchedEffect(msgFlow) {
         msgFlow.collectLatest {
             withContext(Dispatchers.Main) { context.toast(it) }
@@ -166,16 +177,26 @@ fun HomeScreen() {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    TextField(
-                        value = model,
-                        onValueChange = { model = it.trim() },
-                        label = stringResource(R.string.model)
-                    )
-                    TextField(
-                        value = carrier,
-                        onValueChange = { carrier = it.trim() },
-                        label = stringResource(R.string.carrier)
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        TextField(
+                            value = model,
+                            onValueChange = { model = it.trim() },
+                            modifier = Modifier
+                                .weight(1f),
+                            label = stringResource(R.string.model)
+                        )
+                        TextField(
+                            value = carrier,
+                            onValueChange = { carrier = it.trim() },
+                            modifier = Modifier
+                                .weight(1f),
+                            label = stringResource(R.string.carrier)
+                        )
+                    }
                     TextField(
                         value = proxy,
                         onValueChange = { proxy = it.trim() },
