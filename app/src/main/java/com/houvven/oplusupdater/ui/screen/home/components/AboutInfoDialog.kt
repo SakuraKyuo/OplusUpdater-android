@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,6 +45,7 @@ fun AboutInfoDialog(
         ) {
             Column(
                 modifier = Modifier
+                    .padding(8.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(MiuixTheme.colorScheme.surface)
             ) {

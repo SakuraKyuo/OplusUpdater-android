@@ -78,6 +78,7 @@ private fun SuperArrowWrapper(
     rightActionColor: RightActionColors = SuperArrowDefaults.rightActionColors(),
     onClick: (() -> Unit)? = null,
 ) {
+
     if (!summary.isNullOrBlank()) {
         SuperArrow(
             title = title,
