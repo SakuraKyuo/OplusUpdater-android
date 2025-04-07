@@ -48,6 +48,7 @@ import top.yukonga.miuix.kmp.basic.Button
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
+import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
 import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.SmallTopAppBar
 import top.yukonga.miuix.kmp.basic.Text
@@ -86,6 +87,7 @@ fun HomeScreen() {
     val scrollState = rememberScrollState()
     var showAboutInfoDialog by remember { mutableStateOf(false) }
 
+    var isQuerying by rememberSaveable { mutableStateOf(false) }
     var expandMoreParameters by rememberSaveable { mutableStateOf(false) }
     var otaVersion by rememberSaveable { mutableStateOf(simpleSystemOtaVersion) }
     var model by rememberSaveable { mutableStateOf("") }
@@ -207,11 +209,14 @@ fun HomeScreen() {
                         it.proxy = proxy
                     }
                     coroutineScope.launch(Dispatchers.IO) {
+                        isQuerying = true
                         try {
                             responseResult = null
                             responseResult = Updater.queryUpdate(args)
                         } catch (e: Exception) {
                             msgFlow.emit(e.message ?: e.stackTraceToString())
+                        } finally {
+                            isQuerying = false
                         }
                     }
                 },
@@ -221,13 +226,20 @@ fun HomeScreen() {
                 enabled = otaVersion.isNotBlank(),
                 colors = ButtonDefaults.buttonColorsPrimary(),
             ) {
-                Text(
-                    text = stringResource(R.string.query),
-                    color = MiuixTheme.colorScheme.onPrimary,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp
-                )
+                if (isQuerying) {
+                    InfiniteProgressIndicator(
+                        color = MiuixTheme.colorScheme.onPrimary,
+                        size = 20.dp
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.query),
+                        color = MiuixTheme.colorScheme.onPrimary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp
+                    )
+                }
             }
 
             AnimatedVisibility(visible = responseResult != null) {
