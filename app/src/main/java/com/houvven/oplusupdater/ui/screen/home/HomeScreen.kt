@@ -66,7 +66,10 @@ enum class OtaRegion(
     CN(R.string.china),
     EU(R.string.europe),
     IN(R.string.india),
-    SG(R.string.singapore)
+    SG(R.string.singapore),
+    RU(R.string.russia),
+    TR(R.string.turkey),
+    TH(R.string.thailand),
 }
 
 @delegate:SuppressLint("PrivateApi")

@@ -25,4 +25,7 @@
     <string name="proxy">代理</string>
     <string name="software_version">软件版本</string>
     <string name="model">型号</string>
+    <string name="russia">俄罗斯</string>
+    <string name="turkey">土耳其</string>
+    <string name="thailand">泰国</string>
 </resources>
