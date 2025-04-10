@@ -97,7 +97,6 @@ fun HomeScreen() {
     var model by rememberSaveable { mutableStateOf("") }
     var carrier by rememberSaveable { mutableStateOf("") }
     var otaRegion by rememberSaveable { mutableStateOf(OtaRegion.CN) }
-    var proxy by rememberSaveable { mutableStateOf("") }
     var responseResult by remember { mutableStateOf<ResponseResult?>(null) }
     val msgFlow = MutableSharedFlow<String>()
 
@@ -208,11 +207,6 @@ fun HomeScreen() {
                             label = stringResource(R.string.carrier)
                         )
                     }
-                    TextField(
-                        value = proxy,
-                        onValueChange = { proxy = it.trim() },
-                        label = stringResource(R.string.proxy)
-                    )
                 }
             }
 
@@ -238,7 +232,6 @@ fun HomeScreen() {
                         it.region = otaRegion.name
                         it.model = model
                         it.nvCarrier = carrier
-                        it.proxy = proxy
                     }
                     coroutineScope.launch(Dispatchers.IO) {
                         isQuerying = true
