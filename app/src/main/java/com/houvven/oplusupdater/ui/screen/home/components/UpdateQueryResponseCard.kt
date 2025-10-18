@@ -1,6 +1,7 @@
 package com.houvven.oplusupdater.ui.screen.home.components
 
 import android.content.ClipData
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -148,13 +149,21 @@ private fun UpdateQueryResponseCardContent(
                         .format(Date(it))
                 }
             )
-            SuperArrowWrapper(
-                title = stringResource(R.string.update_log),
-                summary = description?.panelUrl,
-                onClick = {
-                    showUpdateLogDialog = true
-                }
-            )
+            description?.panelUrl?.let {
+                SuperArrowWrapper(
+                    modifier = Modifier.combinedClickable(
+                        onClick = { showUpdateLogDialog = true },
+                        onLongClick = {
+                            coroutineScope.launch {
+                                clipboard.setClipEntry(ClipData.newPlainText(it, it).toClipEntry())
+                            }
+                            context.toast(R.string.copied)
+                        }
+                    ),
+                    title = stringResource(R.string.update_log),
+                    summary = it
+                )
+            }
         }
 
         components?.forEach { component ->
