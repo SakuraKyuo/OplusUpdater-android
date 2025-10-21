@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "com.houvven.oplusupdater"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.houvven.oplusupdater"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 7
         versionName = "1.0.6"
 
