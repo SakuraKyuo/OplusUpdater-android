@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import top.yukonga.miuix.kmp.basic.Button
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
+import top.yukonga.miuix.kmp.basic.Checkbox
 import top.yukonga.miuix.kmp.basic.Icon
 import top.yukonga.miuix.kmp.basic.IconButton
 import top.yukonga.miuix.kmp.basic.InfiniteProgressIndicator
@@ -98,6 +99,7 @@ fun HomeScreen() {
     var model by rememberSaveable { mutableStateOf("") }
     var carrier by rememberSaveable { mutableStateOf("") }
     var otaRegion by rememberSaveable { mutableStateOf(OtaRegion.CN) }
+    var gray by rememberSaveable { mutableStateOf(false) }
     var responseResult by remember { mutableStateOf<ResponseResult?>(null) }
     val msgFlow = MutableSharedFlow<String>()
 
@@ -116,7 +118,7 @@ fun HomeScreen() {
     }
 
     LaunchedEffect(otaRegion) {
-        carrier = Updater.getConfig(otaRegion.name).carrierID
+        carrier = Updater.getConfig(otaRegion.name, 0).carrierID
     }
 
     LaunchedEffect(msgFlow) {
@@ -224,6 +226,29 @@ fun HomeScreen() {
                     otaRegion = OtaRegion.entries[it]
                 }
             }
+            
+            AnimatedVisibility(visible = otaRegion == OtaRegion.CN) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MiuixTheme.colorScheme.surface)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Checkbox(
+                        checked = gray,
+                        onCheckedChange = { gray = it }
+                    )
+                    
+                    Text(
+                        text = stringResource(R.string.gray),
+                        color = MiuixTheme.colorScheme.onSurface,
+                        fontSize = 14.sp
+                    )
+                }
+            }
 
             Button(
                 onClick = {
@@ -233,6 +258,9 @@ fun HomeScreen() {
                         it.region = otaRegion.name
                         it.model = model
                         it.nvCarrier = carrier
+                        if (otaRegion == OtaRegion.CN && gray) {
+                            it.gray = 1
+                        }
                     }
                     coroutineScope.launch(Dispatchers.IO) {
                         isQuerying = true
