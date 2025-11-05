@@ -74,6 +74,16 @@ enum class OtaRegion(
     GL(R.string.global)
 }
 
+@Keep
+enum class QueryMode(
+    @StringRes val strRes: Int,
+) {
+    MANUAL(R.string.manual),
+    CLIENT_AUTO(R.string.client_auto),
+    SERVER_AUTO(R.string.server_auto),
+    TASTE(R.string.taste)
+}
+
 @delegate:SuppressLint("PrivateApi")
 val systemOtaVersion: String by lazy {
     val clazz = Class.forName("android.os.SystemProperties")
@@ -99,6 +109,7 @@ fun HomeScreen() {
     var model by rememberSaveable { mutableStateOf("") }
     var carrier by rememberSaveable { mutableStateOf("") }
     var otaRegion by rememberSaveable { mutableStateOf(OtaRegion.CN) }
+    var reqMode by rememberSaveable { mutableStateOf(QueryMode.MANUAL) }
     var gray by rememberSaveable { mutableStateOf(false) }
     var responseResult by remember { mutableStateOf<ResponseResult?>(null) }
     val msgFlow = MutableSharedFlow<String>()
@@ -225,6 +236,14 @@ fun HomeScreen() {
                 ) {
                     otaRegion = OtaRegion.entries[it]
                 }
+
+                SuperDropdown(
+                    title = stringResource(R.string.mode),
+                    items = QueryMode.entries.map { stringResource(it.strRes) },
+                    selectedIndex = QueryMode.entries.indexOf(reqMode)
+                ) {
+                    reqMode = QueryMode.entries[it]
+                }
             }
             
             AnimatedVisibility(visible = otaRegion == OtaRegion.CN) {
@@ -260,6 +279,20 @@ fun HomeScreen() {
                         it.nvCarrier = carrier
                         if (otaRegion == OtaRegion.CN && gray) {
                             it.gray = 1
+                        }
+                        when (reqMode) {
+                            QueryMode.MANUAL -> {
+                                it.reqMode = "manual"
+                            }
+                            QueryMode.CLIENT_AUTO -> {
+                                it.reqMode = "client_auto"
+                            }
+                            QueryMode.SERVER_AUTO -> {
+                                it.reqMode = "server_auto"
+                            }
+                            QueryMode.TASTE -> {
+                                it.reqMode = "taste"
+                            }
                         }
                     }
                     coroutineScope.launch(Dispatchers.IO) {

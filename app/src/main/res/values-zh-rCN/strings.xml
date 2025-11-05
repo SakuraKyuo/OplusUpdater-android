@@ -30,4 +30,8 @@
     <string name="turkey">土耳其</string>
     <string name="thailand">泰国</string>
     <string name="global">全球</string>
+    <string name="manual">manual</string>
+    <string name="client_auto">client_auto</string>
+    <string name="server_auto">server_auto</string>
+    <string name="taste">taste</string>
 </resources>

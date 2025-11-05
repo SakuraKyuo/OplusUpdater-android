@@ -32,4 +32,8 @@
     <string name="turkey">Turkey</string>
     <string name="thailand">Thailand</string>
     <string name="global">Global</string>
+    <string name="manual">manual</string>
+    <string name="client_auto">client_auto</string>
+    <string name="server_auto">server_auto</string>
+    <string name="taste">taste</string>
 </resources>
