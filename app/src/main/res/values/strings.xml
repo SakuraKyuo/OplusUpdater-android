@@ -3,6 +3,7 @@
     <string name="ota_version">OTA Version</string>
     <string name="region">Region</string>
     <string name="mode">Mode</string>
+    <string name="guid">GUID</string>
     <string name="gray">Gray Update</string>
     <string name="query">Query</string>
     <string name="china">China</string>

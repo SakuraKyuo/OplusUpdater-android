@@ -108,6 +108,7 @@ fun HomeScreen() {
     var otaVersion by rememberSaveable { mutableStateOf(simpleSystemOtaVersion) }
     var model by rememberSaveable { mutableStateOf("") }
     var carrier by rememberSaveable { mutableStateOf("") }
+    var guid by rememberSaveable { mutableStateOf("") }
     var otaRegion by rememberSaveable { mutableStateOf(OtaRegion.CN) }
     var reqMode by rememberSaveable { mutableStateOf(QueryMode.MANUAL) }
     var gray by rememberSaveable { mutableStateOf(false) }
@@ -224,6 +225,13 @@ fun HomeScreen() {
                 }
             }
 
+            TextField(
+                value = guid,
+                onValueChange = { guid = it.trim() },
+                modifier = Modifier.fillMaxWidth(),
+                label = stringResource(R.string.guid)
+            )
+
             Column(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
@@ -277,6 +285,9 @@ fun HomeScreen() {
                         it.region = otaRegion.name
                         it.model = model
                         it.nvCarrier = carrier
+                        if (guid.isNotBlank()) {
+                            it.guid = guid
+                        }
                         if (otaRegion == OtaRegion.CN && gray) {
                             it.gray = 1
                         }
