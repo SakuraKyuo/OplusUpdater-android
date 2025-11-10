@@ -122,7 +122,7 @@ private fun UpdateQueryResponseCardContent(
             )
             SuperArrowWrapper(
                 title = stringResource(R.string.version_name),
-                summary = versionName
+                summary = realVersionName ?: versionName
             )
             (realOtaVersion ?: otaVersion)?.let {
                 SuperArrowWrapper(
