@@ -1,10 +1,12 @@
 package com.houvven.oplusupdater.ui.screen.home.components
 
 import android.content.ClipData
+import android.content.Context
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,7 +23,9 @@ import com.houvven.oplusupdater.R
 import com.houvven.oplusupdater.domain.UpdateQueryResponse
 import com.houvven.oplusupdater.utils.StorageUnitUtil
 import com.houvven.oplusupdater.utils.toast
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import top.yukonga.miuix.kmp.basic.BasicComponentColors
 import top.yukonga.miuix.kmp.basic.BasicComponentDefaults
@@ -30,6 +34,8 @@ import top.yukonga.miuix.kmp.extra.RightActionColors
 import top.yukonga.miuix.kmp.extra.SuperArrow
 import top.yukonga.miuix.kmp.extra.SuperArrowDefaults
 import updater.ResponseResult
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -176,13 +182,25 @@ private fun UpdateQueryResponseCardContent(
                     summary = component.componentName,
                     rightText = size
                 )
-                componentPackets.manualUrl?.let {
+                componentPackets.manualUrl?.let { manualUrl ->
+                    var resolvedUrl by remember(manualUrl) { mutableStateOf<String?>(null) }
+                    
+                    if (resolvedUrl == null && manualUrl.contains("downloadCheck")) {
+                        LaunchedEffect(manualUrl) {
+                            resolvedUrl = withContext(Dispatchers.IO) {
+                                resolveDownloadUrl(context, manualUrl)
+                            }
+                        }
+                    }
+
+                    val displayUrl = resolvedUrl ?: manualUrl
+                    
                     SuperArrowWrapper(
                         title = stringResource(R.string.packet_url),
-                        summary = componentPackets.url,
+                        summary = displayUrl,
                         onClick = {
                             coroutineScope.launch {
-                                clipboard.setClipEntry(ClipData.newPlainText(it, it).toClipEntry())
+                                clipboard.setClipEntry(ClipData.newPlainText(displayUrl, displayUrl).toClipEntry())
                             }
                             context.toast(R.string.copied)
                         }
@@ -211,5 +229,42 @@ private fun UpdateQueryResponseCardContent(
             softwareVersion = versionName ?: "Only god known it.",
             onDismissRequest = { showUpdateLogDialog = false }
         )
+    }
+}
+
+private suspend fun resolveDownloadUrl(context: Context, originalUrl: String): String {
+    return if (originalUrl.contains("downloadCheck")) {
+        try {
+            
+            val nativeLibsDir = context.applicationInfo.nativeLibraryDir
+            val libPath = "$nativeLibsDir/libresolver.so"
+            val resolverFile = File(libPath)
+
+            if (resolverFile.exists() && resolverFile.canExecute()) {
+                try {
+                    val process = ProcessBuilder()
+                        .command(resolverFile.absolutePath, originalUrl)
+                        .redirectErrorStream(true)
+                        .start()
+                    
+                    val output = process.inputStream.bufferedReader().use { it.readText().trim() }
+                    val exitCode = process.waitFor()
+                    
+                    if (exitCode == 0 && output.isNotBlank()) {
+                        return output
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }                
+                originalUrl
+            } else {
+                originalUrl
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            originalUrl
+        }
+    } else {
+        originalUrl
     }
 }

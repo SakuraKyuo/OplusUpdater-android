@@ -46,6 +46,13 @@ android {
             include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
         }
     }
+    
+    sourceSets {
+        getByName("main") {
+            jniLibs.srcDirs("libs")
+        }
+    }
+    
     applicationVariants.all {
         outputs.all {
             this as BaseVariantOutputImpl
@@ -61,6 +68,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("lib*.so"))))
     implementation(rootProject.files("OplusUpdater/updater.aar"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.core.ktx)
