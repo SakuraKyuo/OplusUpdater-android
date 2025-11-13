@@ -35,7 +35,6 @@ import top.yukonga.miuix.kmp.extra.SuperArrow
 import top.yukonga.miuix.kmp.extra.SuperArrowDefaults
 import updater.ResponseResult
 import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -184,11 +183,17 @@ private fun UpdateQueryResponseCardContent(
                 )
                 componentPackets.manualUrl?.let { manualUrl ->
                     var resolvedUrl by remember(manualUrl) { mutableStateOf<String?>(null) }
+                    var expiredTime by remember(manualUrl) { mutableStateOf<String?>(null) }
                     
                     if (resolvedUrl == null && manualUrl.contains("downloadCheck")) {
                         LaunchedEffect(manualUrl) {
                             resolvedUrl = withContext(Dispatchers.IO) {
                                 resolveDownloadUrl(context, manualUrl)
+                            }
+                            
+                            // 解析URL后提取过期时间
+                            resolvedUrl?.let { url ->
+                                expiredTime = extractExpiredTime(url)
                             }
                         }
                     }
@@ -205,6 +210,14 @@ private fun UpdateQueryResponseCardContent(
                             context.toast(R.string.copied)
                         }
                     )
+                    
+                    // 仅在解析了URL且有过期时间时显示过期时间
+                    expiredTime?.let {
+                        SuperArrowWrapper(
+                            title = stringResource(R.string.expired_time),
+                            summary = it
+                        )
+                    }
                 }
                 componentPackets.md5?.let {
                     SuperArrowWrapper(
@@ -266,5 +279,31 @@ private suspend fun resolveDownloadUrl(context: Context, originalUrl: String): S
         }
     } else {
         originalUrl
+    }
+}
+
+/**
+ * 从URL中提取过期时间并转换为可读格式
+ */
+private fun extractExpiredTime(url: String): String? {
+    return try {
+        // 查找 Expires= 或 x-oss-expires= 参数
+        val expiresRegex = """(Expires=|x-oss-expires=)(\d+)""".toRegex()
+        val matchResult = expiresRegex.find(url)
+        
+        if (matchResult != null) {
+            val timestampStr = matchResult.groupValues[2]
+            val timestamp = timestampStr.toLong()
+            
+            // 将时间戳转换为日期格式
+            val date = Date(timestamp * 1000) // 乘以1000转换为毫秒
+            val sdf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+            sdf.format(date)
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 }
