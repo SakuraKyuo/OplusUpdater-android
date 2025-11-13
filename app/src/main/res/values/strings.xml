@@ -17,6 +17,7 @@
     <string name="android_version">Android Version</string>
     <string name="packet_url">Download Url</string>
     <string name="packet_size">Size</string>
+    <string name="expired_time">Expires Time</string>
     <string name="packet_md5" translatable="false">MD5</string>
     <string name="packet_name">Name</string>
     <string name="update_log">Update Log</string>
