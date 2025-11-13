@@ -16,6 +16,7 @@
     <string name="published_time">发布时间</string>
     <string name="android_version">安卓版本</string>
     <string name="packet_url">链接</string>
+    <string name="expired_time">过期时间</string>
     <string name="packet_size">大小</string>
     <string name="packet_name">名称</string>
     <string name="update_log">更新日志</string>
