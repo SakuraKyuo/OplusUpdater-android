@@ -191,7 +191,6 @@ private fun UpdateQueryResponseCardContent(
                                 resolveDownloadUrl(context, manualUrl)
                             }
                             
-                            // 解析URL后提取过期时间
                             resolvedUrl?.let { url ->
                                 expiredTime = extractExpiredTime(url)
                             }
@@ -211,7 +210,6 @@ private fun UpdateQueryResponseCardContent(
                         }
                     )
                     
-                    // 仅在解析了URL且有过期时间时显示过期时间
                     expiredTime?.let {
                         SuperArrowWrapper(
                             title = stringResource(R.string.expired_time),
@@ -282,12 +280,8 @@ private suspend fun resolveDownloadUrl(context: Context, originalUrl: String): S
     }
 }
 
-/**
- * 从URL中提取过期时间并转换为可读格式
- */
 private fun extractExpiredTime(url: String): String? {
     return try {
-        // 查找 Expires= 或 x-oss-expires= 参数
         val expiresRegex = """(Expires=|x-oss-expires=)(\d+)""".toRegex()
         val matchResult = expiresRegex.find(url)
         
@@ -295,8 +289,7 @@ private fun extractExpiredTime(url: String): String? {
             val timestampStr = matchResult.groupValues[2]
             val timestamp = timestampStr.toLong()
             
-            // 将时间戳转换为日期格式
-            val date = Date(timestamp * 1000) // 乘以1000转换为毫秒
+            val date = Date(timestamp * 1000)
             val sdf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
             sdf.format(date)
         } else {
